@@ -1,5 +1,5 @@
 # Current Operator version
-VERSION         := 0.2.9
+VERSION         := 0.2.12
 TAG             := v$(VERSION)
 REGISTRY        ?= quay.io
 ORG             ?= rh-nfv-int
@@ -79,7 +79,7 @@ ifeq (,$(shell which kustomize 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUSTOMIZE)) ;\
-	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.5.4/kustomize_v3.5.4_$(OS)_$(ARCH).tar.gz | \
+	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v4.5.4/kustomize_v4.5.4_$(OS)_$(ARCH).tar.gz | \
 	tar xzf - -C bin/ ;\
 	}
 else
@@ -96,7 +96,7 @@ ifeq (,$(shell which operator-sdk 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPERATOR_SDK)) ;\
-	curl -sLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.7.2/operator-sdk_$(OS)_$(ARCH) ; \
+	curl -sLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.25.0/operator-sdk_$(OS)_$(ARCH) ; \
 	chmod u+x $(OPERATOR_SDK) ; \
 	}
 else
@@ -113,7 +113,7 @@ ifeq (,$(shell which ansible-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(ANSIBLE_OPERATOR)) ;\
-	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.3.0/ansible-operator_$(OS)_$(ARCH) ;\
+	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.25.0/ansible-operator_$(OS)_$(ARCH) ;\
 	chmod +x $(ANSIBLE_OPERATOR) ;\
 	}
 else
@@ -128,9 +128,11 @@ bundle: kustomize operator-sdk
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 	DIGEST=$$(skopeo inspect docker://$(IMG) | jq -r '.Digest') && sed -i -e 's/\(\s*image: .*\):v'$(VERSION)'/\1@'$${DIGEST}'/' bundle/manifests/$(OPERATOR_NAME).clusterserviceversion.yaml
-	sed -i -e '/^# Copy.*/i LABEL com.redhat.openshift.versions="v4.6"\nLABEL com.redhat.delivery.backport=false\nLABEL com.redhat.delivery.operator.bundle=true' bundle.Dockerfile
+	sed -i -e '/^# Copy.*/i LABEL com.redhat.openshift.versions="v4.12"\nLABEL com.redhat.delivery.backport=false\nLABEL com.redhat.delivery.operator.bundle=true' bundle.Dockerfile
 	cat relatedImages.yaml >> bundle/manifests/$(OPERATOR_NAME).clusterserviceversion.yaml
 	$(OPERATOR_SDK) bundle validate ./bundle
+	echo "bundle image=$(IMG)"
+	echo "digest=$(DIGEST)"
 
 # Build the bundle image, using local bundle image name
 .PHONY: bundle-build
