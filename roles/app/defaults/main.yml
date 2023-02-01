@@ -1,5 +1,4 @@
 ---
-# DNM TODO: !! change the digest !! The current digest is from tkrishtop orga
 image_app: "quay.io/rh-nfv-int/trex-container-app@sha256:da8c5aae7f2f7459d9d7b842880040cfde0ce301a9edc83e88ae9f27dc448829" # v0.2.6
 image_pull_policy: Always
 command: ["trex-wrapper"]
