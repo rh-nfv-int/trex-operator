@@ -1,3 +1,7 @@
+# [ARCHIVED] Part of example-cnf project
+No maintenance on this repository. 
+See the updated version of ====> [example-cnf HERE](https://github.com/openshift-kni/example-cnf).
+
 ## How to rebuild trex-operator
 
 1. Build new version of the application container (vx.y.z is currently v0.2.6)
