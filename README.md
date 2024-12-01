@@ -1,3 +1,8 @@
+> [!WARNING]
+> This repository is now *archived*
+
+Please use https://github.com/openshift-kni/example-cnf where trex-operator is maintained
+
 ## How to rebuild trex-operator
 
 1. Build new version of the application container (vx.y.z is currently v0.2.6)
